@@ -25,15 +25,18 @@ export class TreeDiagramNodesList {
     });
     this._makeRoots()
 
-    this.makerGuid = this.uuidv4()
-    let node = {
-      guid: this.makerGuid,
-      parentId: 'root',
-      children: [],
-      displayName: 'New node'
+    if(!this.config.noChild)
+    {
+      this.makerGuid = this.uuidv4()
+      let node = {
+        guid: this.makerGuid,
+        parentId: 'root',
+        children: [],
+        displayName: 'New node'
+      }
+      let maker = new TreeDiagramNodeMaker(node, this.config, this.getThisNodeList.bind(this))
+      this._nodesList.set(this.makerGuid, maker)
     }
-    let maker = new TreeDiagramNodeMaker(node, this.config, this.getThisNodeList.bind(this))
-    this._nodesList.set(this.makerGuid, maker)
   }
 
   private _makeRoots () {
@@ -58,9 +61,12 @@ export class TreeDiagramNodesList {
     }
     node.parentId = null
     this._makeRoots()
-    let maker = this.getNode(this.makerGuid)
-    maker.isDragging = false
-    maker.isDragover = false
+    if(!this.config.noChild)
+    {
+      let maker = this.getNode(this.makerGuid)
+      maker.isDragging = false
+      maker.isDragover = false
+    }
   }
 
   public transfer (origin: string, target: string ) {
@@ -145,12 +151,15 @@ export class TreeDiagramNodesList {
   }
 
   public newNode(parentId = null){
-    let _nodeTemplate = Object.assign({}, this._nodeTemplate)
-    _nodeTemplate.guid = this.uuidv4();
-    _nodeTemplate.parentId = parentId;
-    this._nodesList.set(_nodeTemplate.guid, new TreeDiagramNode(_nodeTemplate, this.config, this.getThisNodeList.bind(this)))
-    this._makeRoots()
-    return _nodeTemplate.guid
+    if(!this.config.noChild)
+    {
+      let _nodeTemplate = Object.assign({}, this._nodeTemplate)
+      _nodeTemplate.guid = this.uuidv4();
+      _nodeTemplate.parentId = parentId;
+      this._nodesList.set(_nodeTemplate.guid, new TreeDiagramNode(_nodeTemplate, this.config, this.getThisNodeList.bind(this)))
+      this._makeRoots()
+      return _nodeTemplate.guid
+    }
   }
 
 }

@@ -15,7 +15,8 @@ import { DomSanitizer } from "@angular/platform-browser";
 export class Tree {
   private _config = {
     nodeWidth: 200,
-    nodeHeight: 100
+    nodeHeight: 100,
+    noChild: false,
   };
 
   private paneDragging = false
@@ -26,11 +27,18 @@ export class Tree {
   public nodes
 
   @Input() set data(_data){
-    if (!_data || !Array.isArray(_data.json)) return
+    console.log("ENTROU!");
+    if (!_data || !Array.isArray(_data.json))
+    {
+      console.log("NÃO ARRAY!", _data.json);
+      return
+    }
+    console.log("É ARRAY!", _data.json)
     if (typeof _data.config === 'object') {
       this._config = Object.assign(this._config, _data.config)
     }
     this.nodes = this.nodesSrv.loadNodes(_data.json, this._config);
+    console.log("NÓS",this.nodes)
   }
 
   constructor (
@@ -41,24 +49,24 @@ export class Tree {
   }
 
   public newNode(){
-    this.nodesSrv.newNode()
+    if(!this._config.noChild) this.nodesSrv.newNode()
   }
 
   public get nodeMaker(){
-    return this.nodesSrv.makerNode()
+    if(!this._config.noChild)  return this.nodesSrv.makerNode()
   }
 
   public onmousedown (event) {
-    this.paneDragging = true;
+    // this.paneDragging = true;
   }
 
   public onmousemove (event) {
-    if (this.paneDragging) {
-      let { movementX, movementY } = event
-      this.paneX += movementX
-      this.paneY += movementY
-      this.makeTransform()
-    }
+    // if (this.paneDragging) {
+    //   let { movementX, movementY } = event
+    //   this.paneX += movementX
+    //   this.paneY += movementY
+    //   this.makeTransform()
+    // }
   }
 
   public onmouseup () {
@@ -74,12 +82,12 @@ export class Tree {
   }
 
   public onmousewheel(event){
-    let delta;
-    event.preventDefault();
-    delta = event.detail || event.wheelDelta;
-    this.zoom += delta / 1000 / 2;
-    this.zoom = Math.min(Math.max(this.zoom, 0.2), 3);
-    this.makeTransform()
+    // let delta;
+    // event.preventDefault();
+    // delta = event.detail || event.wheelDelta;
+    // this.zoom += delta / 1000 / 2;
+    // this.zoom = Math.min(Math.max(this.zoom, 0.2), 3);
+    // this.makeTransform()
   }
 
 }

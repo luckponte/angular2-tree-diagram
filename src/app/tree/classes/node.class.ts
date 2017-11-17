@@ -9,6 +9,7 @@ export class TreeDiagramNode {
   private _toggle: boolean;
   public children: Set<string>;
   public displayName: string;
+  public noChild: boolean;
 
   constructor (props, config, public getThisNodeList: () => TreeDiagramNodesList) {
     if (!props.guid) {
@@ -27,6 +28,9 @@ export class TreeDiagramNode {
     }
     if (config.nodeHeight) {
       this.height = config.nodeHeight
+    }
+    if (config.noChild) {
+      this.noChild = config.noChild
     }
     this.children = new Set(<string[]>props.children)
   }
@@ -93,8 +97,11 @@ export class TreeDiagramNode {
   }
 
   public addChild(){
-    let newNodeGuid = this.getThisNodeList().newNode(this.guid)
-    this.children.add(newNodeGuid)
-    this.toggle(true)
+    if(!this.noChild)
+    {
+      let newNodeGuid = this.getThisNodeList().newNode(this.guid)
+      this.children.add(newNodeGuid)
+      this.toggle(true)
+    }
   }
 }
